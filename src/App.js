@@ -1,23 +1,22 @@
-import logo from './logo.svg';
 import './App.css';
+import Header from './components/Header';
+import CustomerList from './components/CustomerList';
+import Footer from './components/Footer';
+import CreateCustomer from './components/CreateCustomer';
+import { Route, Routes } from 'react-router-dom';
 
 function App() {
+  const title="그린고객관리"
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header title={title} />
+      <div className='content'>
+        <Routes>
+          <Route path="/" element={<CustomerList />}/>
+          <Route path="/create" element={<CreateCustomer />}/>
+        </Routes>
+      </div>
+      <Footer title={title}/>
     </div>
   );
 }

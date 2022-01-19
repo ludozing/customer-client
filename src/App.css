@@ -54,6 +54,9 @@ table.createTable input[type="text"] {
   padding: 8px;
   border: 1px solid #ccc;
 }
+.btnsArea, .content table.createTable td.btnsArea {
+  text-align: center;
+}
 button {
   background-color: coral;
   color: #fff;
@@ -62,4 +65,5 @@ button {
   outline: none;
   padding: 10px 24px;
   border-radius: 6px;
+  cursor: pointer;
 }

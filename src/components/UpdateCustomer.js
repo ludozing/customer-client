@@ -7,40 +7,27 @@ import useAsync from '../hooks/useAsync';
 
 function UpdateCustomer(props) {
     const param = useParams();
-    // Customer.js에서 <Link to={`/customer/${data.c_no}`}>로 주소를 지정해주었고,
-    // App.js에서 <Route path="/customer/:id" element={<DetailCustomer />}/>로 data.c_no를 id라는 파라미터로 지정했기 때문에
-    // useParams()는 해당 페이지의 id(전 data.c_no) 값이 id: 값 형태로 담긴 객체가 된다.
-    const { id } = param;   // param은 객체이므로, id의 값만 구조분해할당으로 빼낸다.
-    async function getCustomer(){
-        const response = await axios.get(
-            `http://localhost:8080/customers/${id}`
-        )
-        return response.data;
-    }
-    const navigate = useNavigate();
-    const [ formData, setFormData ] = useState({
-        c_name: '',
-        c_phone: '',
-        c_birthday: '',
-        c_gender: '',
-        c_addr: ''
-    })
+    const { id } = param;
+    const [ gender, setGender ] = useState('');
     const onChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        })
+        customer[0].c_gender = e.target.value;
+        setGender(e.target.value);
     }
     // form onSubmit 시 get 방식으로 전송되지 않도록 방지
     const onSubmit = (e) => {
         e.preventDefault();
-        insertCustomer();
+        insertCustomer(e.target);
         navigate(-1);
     }
     // post 전송 axios
-    function insertCustomer(){
-        axios.post("http://localhost:8080/customers/:id/update", formData)   // axios.post("보내는 주소", 보내는 데이터)
+    function insertCustomer(form){
+        axios.post(`http://localhost:8080/customers/${id}/update`, {
+            c_name: form.c_name.value,
+            c_phone: form.c_phone.value,
+            c_birthday: form.c_birthday.value,
+            c_gender: form.c_gender.value,
+            c_addr: form.c_addr.value
+        })   // axios.post("보내는 주소", 보내는 데이터)
         .then(function(res){
             console.log(res);
         })
@@ -48,8 +35,16 @@ function UpdateCustomer(props) {
             console.error(err)
         })
     }
-    const state = useAsync(getCustomer);
-    const { loading, error, data: customer } = state;
+    
+    async function getCustomer(){
+        const response = await axios.get(
+            `http://localhost:8080/customers/${id}`
+        )
+        return response.data;
+    }
+    const dataState = useAsync(getCustomer);
+    const { loading, error, data: customer } = dataState;
+    const navigate = useNavigate();
     if(loading) return <div>로딩중...</div>
     if(error) return <div>페이지를 나타낼 수 없습니다.</div>
     if(!customer) return null;
@@ -62,37 +57,37 @@ function UpdateCustomer(props) {
                         <TableRow>
                             <TableCell>이름</TableCell>
                             <TableCell>
-                                <input name="c_name" type="text" value={formData.c_name} onChange={onChange} />
+                                <input name="c_name" type="text" onChange={onChange} defaultValue={customer[0].c_name} />
                             </TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>연락처</TableCell>
                             <TableCell>
-                                <input name="c_phone" type="text" value={formData.c_phone} onChange={onChange} />
+                                <input name="c_phone" type="text" onChange={onChange} defaultValue={customer[0].c_phone} />
                             </TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>생년월일</TableCell>
                             <TableCell>
-                                <input name="c_birthday" type="date" value={formData.c_birthday} onChange={onChange} />
+                                <input name="c_birthday" type="date" onChange={onChange} defaultValue={customer[0].c_birthday} />
                             </TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>성별</TableCell>
                             <TableCell>
-                                남성 <input name="c_gender" type="radio" value="남성" onChange={onChange} />
-                                여성 <input name="c_gender" type="radio" value="여성" onChange={onChange} />
+                                남성 <input name="c_gender" type="radio" value="남성" onChange={onChange} checked={customer[0].c_gender==='남성'? true:false} />
+                                여성 <input name="c_gender" type="radio" value="여성" onChange={onChange} checked={customer[0].c_gender==='여성'? true:false} />
                             </TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>주소</TableCell>
                             <TableCell>
-                                <input name="c_addr" type="text" value={formData.c_addr} onChange={onChange} />
+                                <input name="c_addr" type="text" onChange={onChange} defaultValue={customer[0].c_addr} />
                             </TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell colSpan={2} className="btnsArea">
-                                <button type="submit">수정</button>
+                                <button type="submit">등록</button>
                                 <button type="reset">취소</button>
                             </TableCell>
                         </TableRow>
